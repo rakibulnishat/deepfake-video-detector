@@ -1,0 +1,83 @@
+# config.yaml — All hyperparameters for DFDC Deepfake Detection
+# Edit this section at the top of the Kaggle notebook (Cell 2)
+
+# ─── DATA ────────────────────────────────────────────────────────────────────
+data:
+  root: "/kaggle/input/deepfake-detection-challenge/train"
+  # How many of the 50 train parts to use. Set to 50 for full training.
+  # Start with 3 to verify everything works (fast ~15 min/epoch).
+  num_parts: 5
+  # Max videos to load per part (null = all). Use 200 for quick sanity checks.
+  max_per_part: null
+  # Face crop size (pixels). Model expects square crops.
+  face_size: 224
+  # Frames to extract per video
+  frames_per_video: 8
+  # Train/val split ratio
+  val_split: 0.15
+  num_workers: 2
+
+# ─── MODEL ───────────────────────────────────────────────────────────────────
+model:
+  # Spatial encoder backbone
+  spatial_backbone: "efficientnet_b4"   # from timm
+  # Temporal encoder
+  temporal_backbone: "swin_tiny_patch4_window7_224"  # from timm
+  # STA adapter hidden dimension
+  sta_hidden_dim: 256
+  # Contrastive feature bank size (real/fake prototypes)
+  bank_size: 512
+  # Dropout for classification head
+  dropout: 0.3
+  pretrained: true
+
+# ─── TRAINING ────────────────────────────────────────────────────────────────
+training:
+  epochs: 10
+  batch_size: 16          # Reduce to 8 if OOM on P100
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  # Scheduler: cosine annealing with warmup
+  warmup_epochs: 1
+  # Loss weights
+  bce_weight: 1.0
+  orthogonal_loss_weight: 0.1   # STA orthogonal subspace loss
+  contrastive_loss_weight: 0.1  # Feature bank contrastive loss
+  # Mixed precision (speeds up P100 ~1.5x)
+  use_amp: true
+  # Gradient clipping
+  grad_clip: 1.0
+  # Save checkpoint every N epochs
+  save_every: 1
+  checkpoint_dir: "/kaggle/working/checkpoints"
+
+# ─── AUGMENTATION ────────────────────────────────────────────────────────────
+augmentation:
+  # Applied during training only
+  horizontal_flip: true
+  random_crop: true
+  color_jitter:
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.1
+  gaussian_blur_prob: 0.1
+  # Compression simulation (important for deepfake robustness)
+  jpeg_compression_prob: 0.3
+  jpeg_quality_range: [50, 95]
+
+# ─── EVALUATION ──────────────────────────────────────────────────────────────
+evaluation:
+  results_dir: "/kaggle/working/results"
+  # Operating point for F1 calculation
+  threshold: 0.5
+  # For EER calculation
+  compute_eer: true
+
+# ─── LOGGING ─────────────────────────────────────────────────────────────────
+logging:
+  # Set to your W&B API key, or leave as null to disable
+  wandb_api_key: null
+  wandb_project: "dfdc-deepfake-detection"
+  wandb_run_name: "sta-efficientnet-swin"
+  # Log every N batches
+  log_interval: 50

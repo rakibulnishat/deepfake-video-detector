@@ -161,7 +161,20 @@ train_loader, val_loader = build_dataloaders(cfg, device)
 model = build_model(cfg, device)
 best_ckpt = train(cfg, model, train_loader, val_loader, device)
 ```
+## Download Trained Model
 
+The trained model weights are hosted on Hugging Face:
+
+🔗 https://huggingface.co/nishaatt/deepfake-detector/resolve/main/best_model.pt
+
+To download:
+```python
+from huggingface_hub import hf_hub_download
+path = hf_hub_download(
+    repo_id="nishaatt/deepfake-detector",
+    filename="best_model.pt"
+)
+```
 ---
 
 ## Evaluation

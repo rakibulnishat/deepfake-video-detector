@@ -13,6 +13,8 @@
 
 Try it here: **https://huggingface.co/spaces/nishaatt/deepfake-detector**
 
+![Deepfake Detector Web App](assets/demo.png)
+
 Upload any video and the model will return:
 - FAKE / REAL verdict
 - Fake probability score

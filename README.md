@@ -13,7 +13,7 @@
 
 Try it here: **https://huggingface.co/spaces/nishaatt/deepfake-detector**
 
-![Deepfake Detector Web App](assets/demo.png)
+![Deepfake Detector Web App](demo.png)
 
 Upload any video and the model will return:
 - FAKE / REAL verdict
